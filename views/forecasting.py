@@ -53,9 +53,11 @@ def render_forecasting_section(summary, gram_price: float) -> None:
     key_specs.append((f"{t('if_gold_reaches')} 600", 600.0, False))
     key_specs.append((f"{t('if_gold_reaches')} 650", 650.0, False))
 
-    for label, price, featured in key_specs:
-        row = _scenario_row(summary.total_grams, summary.total_cost, price)
-        _render_scenario(label, row, lang, featured=featured)
+    scenario_cols = st.columns(3)
+    for col, (label, price, featured) in zip(scenario_cols, key_specs):
+        with col:
+            row = _scenario_row(summary.total_grams, summary.total_cost, price)
+            _render_scenario(label, row, lang, featured=featured)
 
     custom_price = st.number_input(
         t("custom_price"),

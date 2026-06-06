@@ -23,7 +23,8 @@ TEXTS = {
         "export_csv": "تحميل CSV",
         "export_excel": "تحميل Excel",
         "no_bars_title": "ابدأ محفظتك الذهبية",
-        "no_bars_hint": "أضف أول سبيكة من تبويب سبائك الذهب لتتبع استثمارك",
+        "no_bars_hint": "اضغط الزر أدناه لإضافة أول سبيكة وتتبع استثمارك",
+        "add_first_bar": "➕ إضافة أول سبيكة",
         "current_gold_price": "سعر الذهب الحالي",
         "per_gram": "للغرام",
         "per_ounce": "للأونصة",
@@ -200,7 +201,8 @@ TEXTS = {
         "export_csv": "Download CSV",
         "export_excel": "Download Excel",
         "no_bars_title": "Start your gold wallet",
-        "no_bars_hint": "Add your first bar from the Gold Bars tab to track your investment",
+        "no_bars_hint": "Click the button below to add your first bar and track your investment",
+        "add_first_bar": "➕ Add your first bar",
         "current_gold_price": "Current Gold Price",
         "per_gram": "per gram",
         "per_ounce": "per ounce",
@@ -405,6 +407,38 @@ def apply_rtl_css():
         if lang == "ar"
         else "'Inter', sans-serif"
     )
+    sidebar_layout_css = ""
+    if lang == "ar":
+        sidebar_layout_css = """
+        [data-testid="stAppViewContainer"] {
+            flex-direction: row-reverse !important;
+        }
+        [data-testid="stSidebar"] {
+            border-left: 1px solid rgba(250, 250, 250, 0.15);
+            border-right: none !important;
+        }
+        [data-testid="stSidebar"][aria-expanded="false"] {
+            clip-path: inset(0 100% 0 0) !important;
+        }
+        [data-testid="stSidebarHeader"] {
+            flex-direction: row-reverse !important;
+        }
+        [data-testid="stSidebarCollapseButton"] {
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+        }
+        [data-testid="stToolbar"] > div > div:first-child {
+            order: 2 !important;
+            margin-left: auto !important;
+            margin-right: 0.25rem !important;
+            width: auto !important;
+            min-width: auto !important;
+        }
+        [data-testid="stToolbar"] > div > div:last-child {
+            order: 3 !important;
+            margin-left: 0 !important;
+        }
+        """
 
     st.markdown(
         f"""
@@ -424,14 +458,19 @@ def apply_rtl_css():
             padding-top: 1.5rem;
             padding-bottom: 2rem;
         }}
+        {sidebar_layout_css}
         [data-testid="stSidebar"] {{
             direction: {direction};
             text-align: {text_align};
             background: linear-gradient(180deg, #12121f 0%, #1a1a2e 100%);
             overflow: hidden !important;
         }}
-        [data-testid="stSidebar"] > div {{
+        [data-testid="stSidebar"] > div,
+        [data-testid="stSidebarUserContent"],
+        [data-testid="stSidebarContent"] {{
             overflow-x: hidden !important;
+            overflow-wrap: anywhere;
+            word-break: break-word;
         }}
         [data-testid="stSidebar"][aria-expanded="false"] {{
             min-width: 0 !important;
@@ -442,13 +481,16 @@ def apply_rtl_css():
             padding: 0 !important;
             margin: 0 !important;
         }}
-        [data-testid="stSidebar"][aria-expanded="false"] > div {{
+        [data-testid="stSidebar"][aria-expanded="false"] > div,
+        [data-testid="stSidebar"][aria-expanded="false"] [data-testid="stSidebarUserContent"],
+        [data-testid="stSidebar"][aria-expanded="false"] [data-testid="stSidebarContent"] {{
             display: none !important;
             width: 0 !important;
             min-width: 0 !important;
             overflow: hidden !important;
             opacity: 0 !important;
             pointer-events: none !important;
+            visibility: hidden !important;
         }}
         h1, h2, h3, h4, h5, h6 {{
             text-align: {text_align};

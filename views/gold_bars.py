@@ -190,11 +190,21 @@ def render(session, gram_price: float, user_id: int) -> None:
     if is_privacy_mode():
         st.info(t("privacy_active"))
 
+    metrics, _ = get_portfolio_metrics(session, gram_price, user_id)
+    show_add_prominent = st.session_state.pop("open_add_bar", False) or not metrics
+
+    if show_add_prominent:
+        st.markdown(f"### {t('add_bar')}")
+        data = _bar_form("add_prominent")
+        if data:
+            create_bar(session, user_id, **data)
+            st.success(t("bar_added"))
+            st.rerun()
+        st.divider()
+
     tab_list, tab_add, tab_edit, tab_delete = st.tabs(
         [t("nav_gold_bars"), t("add_bar"), t("edit_bar"), t("delete_bar")]
     )
-
-    metrics, _ = get_portfolio_metrics(session, gram_price, user_id)
 
     with tab_list:
         if not metrics:

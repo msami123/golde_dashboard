@@ -65,7 +65,7 @@ def set_logged_in(user: object) -> None:
     get_cookie_manager().set(
         COOKIE_NAME,
         token,
-        expires=time.time() + COOKIE_MAX_AGE_DAYS * 86400,
+        max_age=COOKIE_MAX_AGE_DAYS * 86400,
     )
 
 
@@ -79,21 +79,22 @@ def is_logged_in() -> bool:
     return bool(st.session_state.get("user_id"))
 
 
-def restore_session_from_cookie() -> None:
+def restore_session_from_cookie() -> bool:
+    """Restore login from cookie. Returns False while cookies are still loading."""
     if is_logged_in():
-        return
+        return True
 
     cookies = get_cookie_manager().get_all()
-    if not cookies:
-        return
+    if cookies is None:
+        return False
 
     token = cookies.get(COOKIE_NAME)
     if not token:
-        return
+        return True
 
     user_id = parse_session_token(token)
     if not user_id:
-        return
+        return True
 
     session = get_session()
     try:
@@ -104,6 +105,8 @@ def restore_session_from_cookie() -> None:
             st.session_state.is_admin = user.is_admin
     finally:
         session.close()
+
+    return True
 
 
 def logout() -> None:

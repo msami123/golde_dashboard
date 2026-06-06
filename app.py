@@ -27,7 +27,9 @@ if "privacy_mode" not in st.session_state:
     st.session_state.privacy_mode = False
 
 apply_rtl_css()
-restore_session_from_cookie()
+
+if not is_logged_in() and not restore_session_from_cookie():
+    st.stop()
 
 if not is_logged_in():
     login.render()

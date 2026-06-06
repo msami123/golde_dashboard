@@ -241,6 +241,10 @@ def render(session, gram_price: float, user_id: int, price_data: dict | None = N
 
     if not metrics:
         render_empty_state(t("no_bars_title"), t("no_bars_hint"))
+        if st.button(t("add_first_bar"), type="primary", use_container_width=True):
+            st.session_state.page = "gold_bars"
+            st.session_state.open_add_bar = True
+            st.rerun()
         return
 
     render_hero_balance(summary, gram_price, price_data)
