@@ -438,6 +438,31 @@ def apply_rtl_css():
             order: 3 !important;
             margin-left: 0 !important;
         }
+        [data-testid="stSidebar"] [data-testid="stCheckbox"] > label {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+            width: 100% !important;
+            gap: 0.5rem !important;
+        }
+        [data-testid="stSidebar"] [data-testid="stCheckbox"] [data-testid="stWidgetLabel"] {
+            display: inline-flex !important;
+            align-items: center !important;
+            flex: 0 1 auto !important;
+            width: auto !important;
+            max-width: calc(100% - 3.5rem) !important;
+            gap: 0.35rem !important;
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+        }
+        [data-testid="stSidebar"] [data-testid="stCheckbox"] [data-testid="stWidgetLabel"] > * {
+            flex: 0 0 auto !important;
+        }
+        [data-testid="stSidebar"] [data-testid="stCheckbox"] [data-testid="stTooltipHoverTarget"],
+        [data-testid="stSidebar"] [data-testid="stCheckbox"] [data-testid="stTooltipIcon"] {
+            margin-inline-start: 0.15rem !important;
+            margin-inline-end: 0 !important;
+        }
         """
 
     st.markdown(

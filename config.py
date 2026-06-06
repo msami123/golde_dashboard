@@ -8,13 +8,10 @@ BASE_DIR = Path(__file__).resolve().parent
 CACHE_DIR = BASE_DIR / "cache"
 CACHE_DIR.mkdir(exist_ok=True)
 
-
-def _load_env() -> None:
-    load_dotenv(BASE_DIR / ".env", override=True)
+load_dotenv(BASE_DIR / ".env", override=True)
 
 
 def _secret_or_env(name: str, default: str = "") -> str:
-    _load_env()
     value = os.getenv(name, "").strip()
     if value:
         return value

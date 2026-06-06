@@ -1,7 +1,9 @@
 from dataclasses import dataclass
 from datetime import date
+from types import SimpleNamespace
 
 import pandas as pd
+import streamlit as st
 from sqlalchemy.orm import Session, joinedload
 
 from db.models import GoldBar, OwnershipParticipant
@@ -50,6 +52,60 @@ class PortfolioSummary:
 
 def _ownership_factor(ownership_percentage: float) -> float:
     return ownership_percentage / 100.0
+
+
+def _bar_record_from_orm(bar: GoldBar) -> dict:
+    return {
+        "id": bar.id,
+        "purchase_date": bar.purchase_date,
+        "bar_type": bar.bar_type,
+        "grams": bar.grams,
+        "purchase_price": bar.purchase_price,
+        "ownership_percentage": bar.ownership_percentage,
+        "notes": bar.notes,
+        "participants": [
+            {
+                "participant_name": p.participant_name,
+                "ownership_percentage": p.ownership_percentage,
+            }
+            for p in bar.participants
+        ],
+    }
+
+
+def _bar_from_record(record: dict) -> SimpleNamespace:
+    return SimpleNamespace(
+        id=record["id"],
+        purchase_date=record["purchase_date"],
+        bar_type=record["bar_type"],
+        grams=record["grams"],
+        purchase_price=record["purchase_price"],
+        ownership_percentage=record["ownership_percentage"],
+        notes=record["notes"],
+        participants=[
+            SimpleNamespace(
+                participant_name=p["participant_name"],
+                ownership_percentage=p["ownership_percentage"],
+            )
+            for p in record["participants"]
+        ],
+    )
+
+
+@st.cache_data(show_spinner=False)
+def _fetch_bar_records(_session: Session, user_id: int) -> tuple[dict, ...]:
+    bars = (
+        _session.query(GoldBar)
+        .options(joinedload(GoldBar.participants))
+        .filter(GoldBar.owner_id == user_id)
+        .order_by(GoldBar.purchase_date.desc())
+        .all()
+    )
+    return tuple(_bar_record_from_orm(bar) for bar in bars)
+
+
+def _invalidate_user_bar_cache(user_id: int) -> None:
+    _fetch_bar_records.clear()
 
 
 def calculate_bar_metrics(bar: GoldBar, gram_price: float) -> BarMetrics:
@@ -118,7 +174,8 @@ def get_bar_by_id(session: Session, bar_id: int, user_id: int) -> GoldBar | None
 def get_portfolio_metrics(
     session: Session, gram_price: float, user_id: int
 ) -> tuple[list[BarMetrics], PortfolioSummary]:
-    bars = get_all_bars(session, user_id)
+    records = _fetch_bar_records(session, user_id)
+    bars = [_bar_from_record(record) for record in records]
     metrics = [calculate_bar_metrics(bar, gram_price) for bar in bars]
 
     total_grams = sum(m.my_grams for m in metrics)
@@ -230,6 +287,7 @@ def create_bar(
 
     session.commit()
     session.refresh(bar)
+    _invalidate_user_bar_cache(user_id)
     return bar
 
 
@@ -272,6 +330,7 @@ def update_bar(
 
     session.commit()
     session.refresh(bar)
+    _invalidate_user_bar_cache(user_id)
     return bar
 
 
@@ -281,6 +340,7 @@ def delete_bar(session: Session, bar_id: int, user_id: int) -> bool:
         return False
     session.delete(bar)
     session.commit()
+    _invalidate_user_bar_cache(user_id)
     return True
 
 
