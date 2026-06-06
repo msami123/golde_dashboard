@@ -66,6 +66,7 @@ def set_logged_in(user: object) -> None:
         COOKIE_NAME,
         token,
         max_age=COOKIE_MAX_AGE_DAYS * 86400,
+        same_site="lax",
     )
 
 
@@ -85,13 +86,15 @@ def restore_session_from_cookie() -> bool:
         return True
 
     cookies = get_cookie_manager().get_all()
-    if cookies is None:
-        return False
-
-    token = cookies.get(COOKIE_NAME)
+    token = cookies.get(COOKIE_NAME) if cookies else None
     if not token:
+        if not st.session_state.get("_cookie_loaded"):
+            st.session_state._cookie_loaded = True
+            time.sleep(0.3)
+            st.rerun()
         return True
 
+    st.session_state._cookie_loaded = True
     user_id = parse_session_token(token)
     if not user_id:
         return True

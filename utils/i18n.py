@@ -521,14 +521,41 @@ def apply_rtl_css():
             text-align: {text_align};
             font-weight: 700;
         }}
-        .block-container > div:first-child {{
-            text-align: {text_align};
+        section.main .privacy-eye-top-spacer {{
+            height: 2.25rem;
+            display: block;
         }}
-        .block-container > div:first-child [data-testid="column"]:last-child {{
-            padding-top: 0.5rem;
+        section.main div:has(> .privacy-eye-top-spacer) + div [data-testid="column"]:nth-child(2) {{
+            padding-top: 0.35rem;
+            padding-inline-end: 0.75rem;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
         }}
-        .block-container > div:first-child [data-testid="column"]:last-child button {{
-            margin-top: 0.15rem;
+        section.main div:has(> .privacy-eye-top-spacer) + div [data-testid="column"]:nth-child(2) [data-testid="stButton"] {{
+            width: 100%;
+            display: flex !important;
+            justify-content: center !important;
+        }}
+        section.main div:has(> .privacy-eye-top-spacer) + div [data-testid="column"]:nth-child(2) button {{
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            width: 2.75rem !important;
+            min-width: 2.75rem !important;
+            height: 2.75rem !important;
+            min-height: 2.75rem !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            line-height: 1 !important;
+            font-size: 1.15rem !important;
+        }}
+        section.main div:has(> .privacy-eye-top-spacer) + div [data-testid="column"]:nth-child(2) button p {{
+            margin: 0 !important;
+            line-height: 1 !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
         }}
         .stMarkdown p {{
             text-align: {text_align};
@@ -903,6 +930,13 @@ def apply_rtl_css():
             .card-grid {{
                 grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
                 gap: 0.55rem;
+            }}
+            section.main .privacy-eye-top-spacer {{
+                height: 2.75rem;
+            }}
+            section.main div:has(> .privacy-eye-top-spacer) + div [data-testid="column"]:nth-child(2) {{
+                padding-top: 0.5rem;
+                padding-inline-end: 1rem;
             }}
         }}
         @media (max-width: 480px) {{

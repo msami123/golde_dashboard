@@ -1,3 +1,5 @@
+import time
+
 import streamlit as st
 
 from db.database import get_session
@@ -43,6 +45,7 @@ def render() -> None:
 
                 if user:
                     set_logged_in(user)
+                    time.sleep(0.4)
                     st.rerun()
                 else:
                     st.error(t("login_failed"))

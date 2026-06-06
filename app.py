@@ -154,8 +154,9 @@ with st.sidebar:
 session = get_session()
 try:
     eye_icon = "🔒" if st.session_state.privacy_mode else "👁️"
-    _, top_right = st.columns([8, 1])
-    with top_right:
+    st.markdown('<div class="privacy-eye-top-spacer"></div>', unsafe_allow_html=True)
+    _, eye_col, _ = st.columns([9, 1, 0.6])
+    with eye_col:
         if st.button(eye_icon, key="privacy_eye", help=t("privacy_mode_hint")):
             st.session_state.privacy_mode = not st.session_state.privacy_mode
             st.rerun()
