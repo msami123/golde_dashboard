@@ -887,6 +887,24 @@ def apply_rtl_css():
                 font-size: 1rem;
             }}
         }}
+        @media (max-width: 640px) {{
+            [data-testid="stHorizontalBlock"]:has(.bar-card) {{
+                flex-wrap: nowrap !important;
+                gap: 0.5rem !important;
+            }}
+            [data-testid="stHorizontalBlock"]:has(.bar-card) > [data-testid="stColumn"] {{
+                min-width: 0 !important;
+                width: auto !important;
+                flex: 1 1 0 !important;
+            }}
+            .bar-card {{
+                padding: 0.75rem 0.8rem !important;
+            }}
+            .card-grid {{
+                grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+                gap: 0.55rem;
+            }}
+        }}
         @media (max-width: 480px) {{
             .hero-balance-value {{
                 font-size: 1.45rem;
@@ -910,8 +928,8 @@ def apply_rtl_css():
                 font-size: 1.75rem;
             }}
             .card-grid {{
-                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-                gap: 0.65rem;
+                grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+                gap: 0.5rem;
             }}
             .data-row {{
                 font-size: 0.82rem;
