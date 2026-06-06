@@ -1,3 +1,5 @@
+import html
+
 import streamlit as st
 
 from utils.formatting import (
@@ -43,6 +45,45 @@ def render_metric_card(
             <div class="bar-card-badge-slot">{badge_html}</div>
         </div>
         """,
+        unsafe_allow_html=True,
+    )
+
+
+def render_data_card_grid(cards: list[dict], lang: str | None = None) -> None:
+    if lang is None:
+        lang = get_lang()
+    if not cards:
+        return
+
+    direction = "rtl" if lang == "ar" else "ltr"
+    text_align = "right" if lang == "ar" else "left"
+    cards_html_parts: list[str] = []
+
+    for card in cards:
+        title = html.escape(str(card.get("title", "")))
+        rows_html: list[str] = []
+        for row in card.get("rows", []):
+            label = html.escape(str(row[0]))
+            value = html.escape(str(row[1]))
+            value_class = row[2] if len(row) > 2 and row[2] else ""
+            class_attr = f" {value_class}" if value_class in ("profit", "loss") else ""
+            rows_html.append(
+                f'<div class="data-row">'
+                f'<span class="data-row-label">{label}</span>'
+                f'<span class="data-row-value{class_attr}">{value}</span>'
+                f"</div>"
+            )
+        cards_html_parts.append(
+            f'<div class="data-card bar-card" style="direction:{direction}; text-align:{text_align};">'
+            f'<div class="data-card-title">{title}</div>'
+            f'{"".join(rows_html)}'
+            f"</div>"
+        )
+
+    st.markdown(
+        f'<div class="card-grid" style="direction:{direction}; text-align:{text_align};">'
+        f'{"".join(cards_html_parts)}'
+        f"</div>",
         unsafe_allow_html=True,
     )
 

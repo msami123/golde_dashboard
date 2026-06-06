@@ -524,6 +524,12 @@ def apply_rtl_css():
         .block-container > div:first-child {{
             text-align: {text_align};
         }}
+        .block-container > div:first-child [data-testid="column"]:last-child {{
+            padding-top: 0.5rem;
+        }}
+        .block-container > div:first-child [data-testid="column"]:last-child button {{
+            margin-top: 0.15rem;
+        }}
         .stMarkdown p {{
             text-align: {text_align};
         }}
@@ -709,6 +715,51 @@ def apply_rtl_css():
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3), 0 0 12px rgba(212, 175, 55, 0.12);
             border-color: rgba(212, 175, 55, 0.45);
         }}
+        .card-grid {{
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+            gap: 0.85rem;
+            width: 100%;
+            margin: 0.5rem 0 1rem 0;
+        }}
+        .data-card {{
+            margin-bottom: 0;
+            min-height: 0;
+        }}
+        .data-card-title {{
+            color: #d4af37;
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 0.65rem;
+            padding-bottom: 0.4rem;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.25);
+        }}
+        .data-row {{
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: 0.5rem;
+            padding: 0.28rem 0;
+            font-size: 0.88rem;
+        }}
+        .data-row-label {{
+            color: #a0a0b0;
+            flex: 1 1 auto;
+        }}
+        .data-row-value {{
+            color: #ffffff;
+            font-weight: 600;
+            direction: ltr;
+            unicode-bidi: plaintext;
+            text-align: end;
+            flex: 0 0 auto;
+        }}
+        .data-row-value.profit {{
+            color: #2ecc71;
+        }}
+        .data-row-value.loss {{
+            color: #e74c3c;
+        }}
         .bar-card-title {{
             color: #e8e8e8;
             font-size: 0.95rem;
@@ -857,6 +908,13 @@ def apply_rtl_css():
             }}
             .pl-box-amount {{
                 font-size: 1.75rem;
+            }}
+            .card-grid {{
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                gap: 0.65rem;
+            }}
+            .data-row {{
+                font-size: 0.82rem;
             }}
         }}
         </style>

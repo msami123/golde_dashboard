@@ -61,15 +61,6 @@ with st.sidebar:
         st.session_state.lang = lang_choice
         st.rerun()
 
-    privacy = st.toggle(
-        t("privacy_mode"),
-        value=st.session_state.privacy_mode,
-        help=t("privacy_mode_hint"),
-    )
-    if privacy != st.session_state.privacy_mode:
-        st.session_state.privacy_mode = privacy
-        st.rerun()
-
     st.divider()
 
     refresh_clicked = st.button(t("refresh_price"))
@@ -162,6 +153,13 @@ with st.sidebar:
 
 session = get_session()
 try:
+    eye_icon = "🔒" if st.session_state.privacy_mode else "👁️"
+    _, top_right = st.columns([8, 1])
+    with top_right:
+        if st.button(eye_icon, key="privacy_eye", help=t("privacy_mode_hint")):
+            st.session_state.privacy_mode = not st.session_state.privacy_mode
+            st.rerun()
+
     current_page = st.session_state.page
 
     if current_page in ("overview", "analytics", "forecasting"):

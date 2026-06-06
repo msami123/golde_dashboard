@@ -1,8 +1,7 @@
-import pandas as pd
 import streamlit as st
 
 from services.portfolio_service import get_portfolio_metrics, get_shared_bars
-from utils.cards import render_metric_card
+from utils.cards import render_data_card_grid, render_metric_card
 from utils.formatting import (
     format_date_local,
     format_money,
@@ -49,21 +48,34 @@ def render(session, gram_price: float, user_id: int) -> None:
                 )
 
             if bar.participants:
-                rows = []
+                participant_cards = []
                 for p in bar.participants:
                     profit = p["current_value"] - p["cost"]
                     return_pct = (profit / p["cost"] * 100) if p["cost"] else 0.0
-                    rows.append(
+                    pl_class = "profit" if profit >= 0 else "loss"
+                    participant_cards.append(
                         {
-                            t("participant"): p["participant_name"],
-                            t("ownership_pct"): format_ownership(p["ownership_percentage"]),
-                            t("grams"): format_weight(p["grams"], lang),
-                            t("cost"): format_money(p["cost"], lang),
-                            t("current_value"): format_money(p["current_value"], lang),
-                            t("profit_loss"): format_money(profit, lang, signed=True),
-                            t("return_pct"): format_percentage(return_pct),
+                            "title": p["participant_name"],
+                            "rows": [
+                                (
+                                    t("ownership_pct"),
+                                    format_ownership(p["ownership_percentage"]),
+                                ),
+                                (t("grams"), format_weight(p["grams"], lang)),
+                                (t("cost"), format_money(p["cost"], lang)),
+                                (
+                                    t("current_value"),
+                                    format_money(p["current_value"], lang),
+                                ),
+                                (
+                                    t("profit_loss"),
+                                    format_money(profit, lang, signed=True),
+                                    pl_class,
+                                ),
+                                (t("return_pct"), format_percentage(return_pct)),
+                            ],
                         }
                     )
-                st.dataframe(pd.DataFrame(rows), width="stretch", hide_index=True)
+                render_data_card_grid(participant_cards, lang)
             else:
                 st.caption(t("full_bar"))

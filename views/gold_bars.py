@@ -11,6 +11,7 @@ from services.portfolio_service import (
     metrics_to_dataframe,
     update_bar,
 )
+from utils.cards import render_data_card_grid
 from utils.formatting import (
     format_date_local,
     format_money,
@@ -244,61 +245,35 @@ def render(session, gram_price: float, user_id: int) -> None:
             if selected_type != t("all_types"):
                 filtered = filtered[filtered["bar_type"] == selected_type]
 
-            display_df = filtered.rename(
-                columns={
-                    "purchase_date": t("purchase_date"),
-                    "bar_type": t("bar_type"),
-                    "grams": t("grams"),
-                    "purchase_price": t("purchase_price"),
-                    "cost_per_gram": t("cost_per_gram"),
-                    "current_value": t("current_value"),
-                    "profit_loss": t("profit_loss"),
-                    "return_percentage": t("return_pct"),
-                    "ownership_percentage": t("ownership_pct"),
-                }
-            )
             lang = get_lang()
-            display_cols = [
-                t("purchase_date"),
-                t("bar_type"),
-                t("grams"),
-                t("purchase_price"),
-                t("cost_per_gram"),
-                t("current_value"),
-                t("profit_loss"),
-                t("return_pct"),
-                t("ownership_pct"),
-            ]
-            formatted_df = display_df[display_cols].copy()
-            formatted_df[t("purchase_date")] = formatted_df[t("purchase_date")].apply(
-                lambda x: format_date_local(x, lang)
-            )
-            formatted_df[t("grams")] = formatted_df[t("grams")].apply(
-                lambda x: format_weight(x, lang)
-            )
-            formatted_df[t("purchase_price")] = formatted_df[t("purchase_price")].apply(
-                lambda x: format_money(x, lang)
-            )
-            formatted_df[t("cost_per_gram")] = formatted_df[t("cost_per_gram")].apply(
-                lambda x: format_money(x, lang)
-            )
-            formatted_df[t("current_value")] = formatted_df[t("current_value")].apply(
-                lambda x: format_money(x, lang)
-            )
-            formatted_df[t("profit_loss")] = formatted_df[t("profit_loss")].apply(
-                lambda x: format_money(x, lang, signed=True)
-            )
-            formatted_df[t("return_pct")] = formatted_df[t("return_pct")].apply(
-                format_percentage
-            )
-            formatted_df[t("ownership_pct")] = formatted_df[t("ownership_pct")].apply(
-                format_ownership
-            )
-            st.dataframe(
-                formatted_df,
-                width="stretch",
-                hide_index=True,
-            )
+            cards = []
+            for _, row in filtered.iterrows():
+                pl = float(row["profit_loss"])
+                pl_class = "profit" if pl >= 0 else "loss"
+                cards.append(
+                    {
+                        "title": f"{row['bar_type']} — {format_weight(row['grams'], lang)}",
+                        "rows": [
+                            (t("purchase_date"), format_date_local(row["purchase_date"], lang)),
+                            (t("bar_type"), row["bar_type"]),
+                            (t("grams"), format_weight(row["grams"], lang)),
+                            (t("purchase_price"), format_money(row["purchase_price"], lang)),
+                            (t("cost_per_gram"), format_money(row["cost_per_gram"], lang)),
+                            (t("current_value"), format_money(row["current_value"], lang)),
+                            (
+                                t("profit_loss"),
+                                format_money(pl, lang, signed=True),
+                                pl_class,
+                            ),
+                            (t("return_pct"), format_percentage(row["return_percentage"])),
+                            (
+                                t("ownership_pct"),
+                                format_ownership(row["ownership_percentage"]),
+                            ),
+                        ],
+                    }
+                )
+            render_data_card_grid(cards, lang)
 
     with tab_add:
         data = _bar_form("add")
