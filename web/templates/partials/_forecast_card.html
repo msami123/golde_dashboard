@@ -1,0 +1,9 @@
+<div class="bar-card forecast-card{% if featured %} featured{% endif %}">
+  <span class="forecast-card-tag">{{ price_text }}</span>
+  <div class="bar-card-title">{{ title }}</div>
+  <div class="bar-card-price{% if is_profit %} profit{% else %} loss{% endif %}">{{ value_text }}</div>
+  <div class="hero-balance-row">
+    <span class="bar-card-badge{% if is_profit %} profit{% else %} loss{% endif %}">{{ profit_text }}</span>
+    <span class="bar-card-badge neutral">{{ return_text }}</span>
+  </div>
+</div>

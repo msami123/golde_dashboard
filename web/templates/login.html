@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="{{ lang }}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ t('app_title') }} — {{ t('login') }}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js" defer></script>
+</head>
+<body dir="{{ 'rtl' if lang == 'ar' else 'ltr' }}">
+  <div class="login-page">
+    <div class="login-card fade-in">
+      <div class="login-header">
+        <div class="logo-mark">
+          <svg viewBox="0 0 256 256" width="24" height="24"><path d="M 128.005 191.173 C 128.448 156.208 156.93 128 192 128 L 192 64 L 128 64 C 128 99.346 99.346 128 64 128 L 64 192 L 128 192 Z M 192 256 L 64 256 C 28.654 256 0 227.346 0 192 L 0 64 L 64 64 L 64 0 L 192 0 C 227.346 0 256 28.654 256 64 L 256 192 L 192 192 Z" fill="white"/></svg>
+        </div>
+        <h1>Smart Gold</h1>
+        <p>{{ t('login_subtitle') }}</p>
+      </div>
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div class="flash {{ category }}">{{ message }}</div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+      <form method="post" action="{{ url_for('auth.login') }}">
+        <div class="form-group">
+          <label for="username">{{ t('username') }}</label>
+          <input type="text" id="username" name="username" class="form-control" autocomplete="username" required>
+        </div>
+        <div class="form-group">
+          <label for="password">{{ t('password') }}</label>
+          <input type="password" id="password" name="password" class="form-control" autocomplete="current-password" required>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width:100%;padding:0.75rem;">{{ t('login') }}</button>
+      </form>
+      <p style="text-align:center;margin-top:1.5rem;font-size:0.85rem;">
+        <a href="/" style="color:var(--text-secondary);">{{ t('app_title') }} ←</a>
+      </p>
+    </div>
+  </div>
+  <script>document.addEventListener('DOMContentLoaded',function(){if(window.lucide)lucide.createIcons();});</script>
+</body>
+</html>

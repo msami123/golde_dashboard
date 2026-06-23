@@ -1,0 +1,79 @@
+<form method="post" class="bar-form">
+  <input type="hidden" name="action" value="{{ action }}">
+  {% if bar %}
+    <input type="hidden" name="bar_id" value="{{ bar.id }}">
+  {% endif %}
+
+  <label class="checkbox-label">
+    <input type="checkbox" id="is_shared" name="is_shared" {% if bar and bar.participants %}checked{% endif %}>
+    {{ t('shared_ownership') }}
+  </label>
+
+  <div id="participants-section" style="{% if not bar or not bar.participants %}display:none{% endif %}">
+    <p><strong>{{ t('participants') }}</strong></p>
+    <div id="participants-container">
+      {% if bar and bar.participants %}
+        {% for p in bar.participants %}
+          <div class="participant-row">
+            <div class="form-group">
+              <input type="text" name="participant_name" class="form-control" value="{{ p.participant_name }}">
+            </div>
+            <div class="form-group">
+              <input type="number" name="participant_pct" class="form-control" min="0" max="100" step="1" value="{{ p.ownership_percentage }}">
+            </div>
+            <button type="button" class="btn btn-secondary btn-sm remove-participant">×</button>
+          </div>
+        {% endfor %}
+      {% else %}
+        <div class="participant-row">
+          <div class="form-group">
+            <input type="text" name="participant_name" class="form-control" value="">
+          </div>
+          <div class="form-group">
+            <input type="number" name="participant_pct" class="form-control" min="0" max="100" step="1" value="50">
+          </div>
+          <button type="button" class="btn btn-secondary btn-sm remove-participant">×</button>
+        </div>
+      {% endif %}
+    </div>
+    <button type="button" id="add-participant-btn" class="btn btn-secondary btn-sm">{{ t('add_participant') }}</button>
+  </div>
+
+  <div class="form-group">
+    <label for="purchase_date">{{ t('purchase_date') }}</label>
+    <input type="date" id="purchase_date" name="purchase_date" class="form-control" required
+           value="{{ bar.purchase_date.isoformat() if bar else today }}">
+  </div>
+
+  <div class="form-row">
+    <div class="form-group">
+      <label for="grams">{{ t('grams') }}</label>
+      <input type="number" id="grams" name="grams" class="form-control" min="0.1" step="0.1" required
+             value="{{ bar.grams if bar else 5 }}">
+    </div>
+    <div class="form-group">
+      <label for="purchase_price">{{ t('purchase_price') }}</label>
+      <input type="number" id="purchase_price" name="purchase_price" class="form-control" min="0" step="1" required
+             value="{{ bar.purchase_price if bar else 0 }}" title="{{ t('purchase_price_help') }}">
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label for="bar_type">{{ t('bar_type') }}</label>
+    <input type="text" id="bar_type" name="bar_type" class="form-control" required value="{{ bar.bar_type if bar else '' }}">
+  </div>
+
+  <div class="form-group">
+    <label for="ownership_percentage">{{ t('ownership_pct') }}</label>
+    <input type="number" id="ownership_percentage" name="ownership_percentage" class="form-control"
+           min="1" max="100" step="1" required value="{{ bar.ownership_percentage if bar else 100 }}"
+           title="{{ t('my_share') }}">
+  </div>
+
+  <div class="form-group">
+    <label for="notes">{{ t('notes') }}</label>
+    <textarea id="notes" name="notes" class="form-control" rows="3">{{ bar.notes or '' if bar else '' }}</textarea>
+  </div>
+
+  <button type="submit" class="btn btn-primary">{{ t('save') }}</button>
+</form>

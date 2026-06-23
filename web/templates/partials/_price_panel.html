@@ -1,0 +1,51 @@
+<div class="price-panel">
+  <h3>{{ t('current_gold_price') }}</h3>
+  {% if price_ctx.gram_price > 0 %}
+    <div class="price-metric">
+      <div class="label">{{ t('per_gram') }}</div>
+      <div class="value">{{ price_ctx.gram_display }}</div>
+      {% if price_ctx.delta_display %}
+        <div class="delta {% if price_ctx.gram_change >= 0 %}up{% else %}down{% endif %}">
+          {{ price_ctx.delta_display }}
+        </div>
+      {% endif %}
+    </div>
+    {% if price_ctx.gram_change and (price_ctx.gram_change >= 0 or price_ctx.gram_change < 0) and price_ctx.gram_change != 0 %}
+      <div class="gold-change-line">
+        {{ t('price_change_today') }}:
+        <span class="gold-change-pill {% if price_ctx.gram_change >= 0 %}up{% else %}down{% endif %}">
+          {{ format_money(price_ctx.gram_change, lang, signed=true) }}
+          {% if price_ctx.change_pct %} · {{ format_percentage(price_ctx.change_pct) }} {% if price_ctx.gram_change >= 0 %}↑{% else %}↓{% endif %}{% endif %}
+        </span>
+      </div>
+    {% endif %}
+    <p class="price-caption">
+      {{ t('per_ounce') }}: {{ price_ctx.ounce_display|ltr }}
+      —
+      {% if lang == 'ar' %}الأونصة = {{ price_ctx.grams_per_ounce }} جرام{% else %}1 oz = {{ price_ctx.grams_per_ounce }} g{% endif %}
+    </p>
+    {% if price_ctx.updated_at %}
+      <p class="price-caption">{{ t('last_updated') }}: {{ price_ctx.updated_at|ltr }} — {{ t('saudi_time') }}</p>
+    {% endif %}
+    {% if price_ctx.price_data.stale %}
+      <div class="alert warning">{{ t('price_stale') }}</div>
+    {% endif %}
+  {% else %}
+    <div class="alert warning">{{ t('price_unavailable') }}</div>
+  {% endif %}
+  {% if price_error %}
+    <div class="alert {% if price_ctx.price_data.error == 'missing_key' %}info{% else %}error{% endif %}">{{ price_error }}</div>
+  {% endif %}
+  {% if price_ctx.api_usage %}
+    <p class="price-caption"><strong>{{ t('api_usage_title') }}</strong></p>
+    <p class="price-caption">{{ t('api_usage_month') }}: {{ price_ctx.api_usage.month_total }}</p>
+    <p class="price-caption">{{ t('api_usage_total') }}: {{ price_ctx.api_usage.all_time }}</p>
+    {% if price_ctx.api_usage.last %}
+      <p class="price-caption">
+        {% if price_ctx.api_usage.last.success %}{{ t('api_usage_last_ok') }}{% else %}{{ t('api_usage_last_fail') }}{% endif %}
+      </p>
+    {% endif %}
+    <p class="price-caption">{{ t('api_usage_limit_hint').format(limit=api_monthly_limit) }}</p>
+  {% endif %}
+  <a href="{{ url_for('main.refresh_price') }}" class="btn btn-secondary btn-block btn-sm">{{ t('refresh_price') }}</a>
+</div>

@@ -1,5 +1,8 @@
 import streamlit as st
 
+from utils.context import get_lang as _get_lang_ctx
+from utils.context import set_lang as _set_lang_ctx
+
 TEXTS = {
     "ar": {
         "app_title": "لوحة ذهب ذكية",
@@ -156,6 +159,25 @@ TEXTS = {
         "login_failed": "اسم المستخدم أو كلمة المرور غير صحيحة",
         "logged_in_as": "مسجّل كـ",
         "nav_admin": "⚙️ إدارة المستخدمين",
+        "nav_dashboard": "لوحة التحكم",
+        "nav_portfolio": "المحفظة",
+        "nav_reports": "التقارير",
+        "nav_alerts": "التنبيهات",
+        "nav_settings": "الإعدادات",
+        "nav_profile": "الملف الشخصي",
+        "nav_support": "الدعم",
+        "today_profit": "ربح اليوم",
+        "portfolio_value_label": "قيمة المحفظة",
+        "recent_purchases": "آخر المشتريات",
+        "page_analytics_desc": "تحليلات متقدمة لأداء محفظتك الذهبية",
+        "page_forecast_desc": "محاكاة سيناريوهات أسعار الذهب المستقبلية",
+        "page_reports_desc": "تصدير وتنزيل تقارير محفظتك",
+        "page_alerts_desc": "تنبيهات الأسعار والمحفظة",
+        "page_settings_desc": "إدارة حسابك وتفضيلاتك",
+        "coming_soon": "قريباً",
+        "free_plan": "مجاني",
+        "pro_plan": "احترافي",
+        "premium_plan": "مميز",
         "admin_subtitle": "إضافة وحذف المستخدمين وإدارة الحسابات",
         "admin_users_list": "المستخدمون",
         "admin_no_users": "لا يوجد مستخدمون",
@@ -334,6 +356,25 @@ TEXTS = {
         "login_failed": "Invalid username or password",
         "logged_in_as": "Signed in as",
         "nav_admin": "⚙️ User Management",
+        "nav_dashboard": "Dashboard",
+        "nav_portfolio": "Portfolio",
+        "nav_reports": "Reports",
+        "nav_alerts": "Alerts",
+        "nav_settings": "Settings",
+        "nav_profile": "Profile",
+        "nav_support": "Support",
+        "today_profit": "Today's P/L",
+        "portfolio_value_label": "Portfolio Value",
+        "recent_purchases": "Recent Purchases",
+        "page_analytics_desc": "Advanced analytics for your gold portfolio performance",
+        "page_forecast_desc": "Simulate future gold price scenarios",
+        "page_reports_desc": "Export and download your portfolio reports",
+        "page_alerts_desc": "Price and portfolio alerts",
+        "page_settings_desc": "Manage your account and preferences",
+        "coming_soon": "Coming soon",
+        "free_plan": "Free",
+        "pro_plan": "Pro",
+        "premium_plan": "Premium",
         "admin_subtitle": "Add, remove, and manage user accounts",
         "admin_users_list": "Users",
         "admin_no_users": "No users found",
@@ -376,9 +417,7 @@ MONTH_KEYS = [
 
 
 def get_lang() -> str:
-    if "lang" not in st.session_state:
-        st.session_state.lang = "ar"
-    return st.session_state.lang
+    return _get_lang_ctx()
 
 
 def t(key: str) -> str:

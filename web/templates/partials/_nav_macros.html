@@ -1,0 +1,16 @@
+{% macro nav_item(endpoint, icon, label, prefix=false) %}
+  {% set active = false %}
+  {% if prefix %}
+    {% if request.endpoint and request.endpoint.startswith(endpoint) %}{% set active = true %}{% endif %}
+  {% else %}
+    {% if request.endpoint == endpoint %}{% set active = true %}{% endif %}
+  {% endif %}
+  <a href="{{ url_for(endpoint) if not prefix else url_for(endpoint) }}"
+     class="nav-link{% if active %} active{% endif %}"
+     {% if prefix %}
+       href="{% if endpoint == 'gold_bars.' %}{{ url_for('gold_bars.index') }}{% elif endpoint == 'admin.' %}{{ url_for('admin.index') }}{% endif %}"
+     {% endif %}>
+    <i data-lucide="{{ icon }}" class="nav-icon"></i>
+    <span>{{ label }}</span>
+  </a>
+{% endmacro %}

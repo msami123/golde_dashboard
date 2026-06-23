@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block page_title %}{{ t('shared_title') }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>{{ t('shared_title') }}</h1>
+  <p>{{ t('shared_subtitle') }}</p>
+</div>
+
+{% if privacy_mode %}<div class="alert info">{{ t('privacy_active') }}</div>{% endif %}
+
+{% if empty %}
+<div class="empty-state">
+  <div class="empty-state-icon"><i data-lucide="users"></i></div>
+  <h3>{{ t('no_shared_bars') }}</h3>
+</div>
+{% else %}
+{% for bar in shared %}
+<div class="panel" style="margin-bottom:1.25rem;">
+  <div class="panel-header"><h2>{{ bar.title }}</h2></div>
+  <div class="panel-body">
+    <div class="stats-grid" style="margin-bottom:1rem;">
+      <div class="stat-card"><div class="stat-label">{{ t('grams') }}</div><div class="stat-value">{{ bar.grams }}</div></div>
+      <div class="stat-card"><div class="stat-label">{{ t('my_share') }}</div><div class="stat-value">{{ bar.my_share }}</div></div>
+      <div class="stat-card"><div class="stat-label">{{ t('current_value') }}</div><div class="stat-value">{{ bar.current_value }}</div></div>
+    </div>
+    {% if bar.participants %}
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>{{ t('participant') }}</th>
+            <th>{{ t('ownership_pct') }}</th>
+            <th>{{ t('grams') }}</th>
+            <th>{{ t('cost') }}</th>
+            <th>{{ t('current_value') }}</th>
+            <th>{{ t('profit_loss') }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for p in bar.participants %}
+          <tr>
+            <td><strong>{{ p.name }}</strong></td>
+            <td class="num">{{ p.ownership }}</td>
+            <td class="num">{{ p.grams }}</td>
+            <td class="num">{{ p.cost }}</td>
+            <td class="num">{{ p.current_value }}</td>
+            <td class="num"><span class="badge {% if p.is_profit %}badge-success{% else %}badge-danger{% endif %}">{{ p.profit }}</span></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <p style="color:var(--text-secondary);">{{ t('full_bar') }}</p>
+    {% endif %}
+  </div>
+</div>
+{% endfor %}
+{% endif %}
+{% endblock %}

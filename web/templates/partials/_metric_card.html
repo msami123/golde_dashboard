@@ -1,0 +1,9 @@
+<div class="bar-card summary-card">
+  <div class="bar-card-title">{{ title }}</div>
+  <div class="bar-card-price{% if value_type %} {{ value_type }}{% endif %}">{{ value }}</div>
+  <div class="bar-card-badge-slot">
+    {% if badge %}
+      <span class="bar-card-badge {{ badge_type or 'neutral' }}">{{ badge }}</span>
+    {% endif %}
+  </div>
+</div>

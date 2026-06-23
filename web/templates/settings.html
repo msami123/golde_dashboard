@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block page_title %}{{ t('nav_settings') }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>{{ t('nav_settings') }}</h1>
+  <p>{{ t('page_settings_desc') }}</p>
+</div>
+
+<div class="settings-grid">
+  <div class="panel">
+    <div class="panel-header"><h2>{{ t('nav_profile') }}</h2></div>
+    <div class="panel-body">
+      <div class="setting-item">
+        <span>{{ t('username') }}</span>
+        <strong>{{ username }}</strong>
+      </div>
+      <div class="setting-item">
+        <span>{{ t('logged_in_as') }}</span>
+        <span class="badge badge-neutral">{% if is_admin %}{{ t('admin_role_admin') }}{% else %}{{ t('admin_role_user') }}{% endif %}</span>
+      </div>
+      {% if is_admin %}
+      <a href="{{ url_for('admin.index') }}" class="btn btn-secondary btn-sm" style="margin-top:1rem;">{{ t('nav_admin') }}</a>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-header"><h2>{{ t('language') }}</h2></div>
+    <div class="panel-body">
+      <div style="display:flex;gap:0.5rem;">
+        <a href="{{ url_for('main.set_language', lang='ar') }}" class="btn {% if lang == 'ar' %}btn-primary{% else %}btn-secondary{% endif %} btn-sm">العربية</a>
+        <a href="{{ url_for('main.set_language', lang='en') }}" class="btn {% if lang == 'en' %}btn-primary{% else %}btn-secondary{% endif %} btn-sm">English</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-header"><h2>{{ t('privacy_mode') }}</h2></div>
+    <div class="panel-body">
+      <p style="color:var(--text-secondary);font-size:0.9rem;margin:0 0 1rem;">{{ t('privacy_mode_hint') }}</p>
+      <form action="{{ url_for('main.toggle_privacy') }}" method="post">
+        <button type="submit" class="btn btn-secondary">
+          <i data-lucide="{% if privacy_mode %}eye-off{% else %}eye{% endif %}" style="width:16px;height:16px;"></i>
+          {% if privacy_mode %}{{ t('privacy_active') }}{% else %}{{ t('privacy_mode') }}{% endif %}
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-header"><h2>API</h2></div>
+    <div class="panel-body">
+      <div class="setting-item">
+        <span>GoldAPI</span>
+        <span class="badge {% if has_api_key %}badge-success{% else %}badge-neutral{% endif %}">
+          {% if has_api_key %}Connected{% else %}Not configured{% endif %}
+        </span>
+      </div>
+      <p style="color:var(--text-muted);font-size:0.8rem;margin:0.75rem 0 0;">{{ t('api_key_missing') if not has_api_key else t('api_usage_limit_hint').format(limit=api_monthly_limit) }}</p>
+    </div>
+  </div>
+</div>
+{% endblock %}

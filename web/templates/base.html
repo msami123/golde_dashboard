@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="{{ lang }}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}{{ t('app_title') }}{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js" defer></script>
+</head>
+<body dir="{{ 'rtl' if lang == 'ar' else 'ltr' }}" class="dashboard-body">
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-brand">
+        <div class="logo-mark">
+          <svg viewBox="0 0 256 256" fill="currentColor" width="18" height="18"><path d="M 128.005 191.173 C 128.448 156.208 156.93 128 192 128 L 192 64 L 128 64 C 128 99.346 99.346 128 64 128 L 64 192 L 128 192 Z M 192 256 L 64 256 C 28.654 256 0 227.346 0 192 L 0 64 L 64 64 L 64 0 L 192 0 C 227.346 0 256 28.654 256 64 L 256 192 L 192 192 Z" fill="white"/></svg>
+        </div>
+        <div class="sidebar-brand-text">
+          <h1>Smart Gold</h1>
+          <span>{{ t('app_subtitle') }}</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-section-label">Main</div>
+        <a href="{{ url_for('overview.index') }}" class="nav-link{% if request.endpoint == 'overview.index' %} active{% endif %}">
+          <i data-lucide="layout-dashboard" class="nav-icon"></i><span>{{ t('nav_dashboard') }}</span>
+        </a>
+        <a href="{{ url_for('overview.index') }}" class="nav-link{% if request.endpoint == 'overview.index' %} active{% endif %}">
+          <i data-lucide="wallet" class="nav-icon"></i><span>{{ t('nav_portfolio') }}</span>
+        </a>
+        <a href="{{ url_for('gold_bars.index') }}" class="nav-link{% if request.endpoint and request.endpoint.startswith('gold_bars.') %} active{% endif %}">
+          <i data-lucide="coins" class="nav-icon"></i><span>{{ t('nav_gold_bars') }}</span>
+        </a>
+        <a href="{{ url_for('analytics.index') }}" class="nav-link{% if request.endpoint and request.endpoint.startswith('analytics.') %} active{% endif %}">
+          <i data-lucide="bar-chart-3" class="nav-icon"></i><span>{{ t('nav_analytics') }}</span>
+        </a>
+        <a href="{{ url_for('forecast.index') }}" class="nav-link{% if request.endpoint and request.endpoint.startswith('forecast.') %} active{% endif %}">
+          <i data-lucide="trending-up" class="nav-icon"></i><span>{{ t('nav_forecasting') }}</span>
+        </a>
+        <a href="{{ url_for('shared_ownership.index') }}" class="nav-link{% if request.endpoint == 'shared_ownership.index' %} active{% endif %}">
+          <i data-lucide="users" class="nav-icon"></i><span>{{ t('nav_shared_ownership') }}</span>
+        </a>
+
+        <div class="nav-section-label">Tools</div>
+        <a href="{{ url_for('reports.index') }}" class="nav-link{% if request.endpoint and request.endpoint.startswith('reports.') %} active{% endif %}">
+          <i data-lucide="file-text" class="nav-icon"></i><span>{{ t('nav_reports') }}</span>
+        </a>
+        <a href="{{ url_for('alerts.index') }}" class="nav-link{% if request.endpoint and request.endpoint.startswith('alerts.') %} active{% endif %}">
+          <i data-lucide="bell" class="nav-icon"></i><span>{{ t('nav_alerts') }}</span>
+        </a>
+
+        <div class="nav-section-label">Account</div>
+        <a href="{{ url_for('settings.index') }}" class="nav-link{% if request.endpoint and request.endpoint.startswith('settings.') %} active{% endif %}">
+          <i data-lucide="settings" class="nav-icon"></i><span>{{ t('nav_settings') }}</span>
+        </a>
+        {% if is_admin %}
+        <a href="{{ url_for('admin.index') }}" class="nav-link{% if request.endpoint and request.endpoint.startswith('admin.') %} active{% endif %}">
+          <i data-lucide="shield" class="nav-icon"></i><span>{{ t('nav_admin') }}</span>
+        </a>
+        {% endif %}
+        <form action="{{ url_for('auth.logout') }}" method="post" style="margin:0;">
+          <button type="submit" class="nav-link" style="width:100%;border:none;background:none;cursor:pointer;font-family:inherit;">
+            <i data-lucide="log-out" class="nav-icon"></i><span>{{ t('logout') }}</span>
+          </button>
+        </form>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button type="button" class="sidebar-toggle" id="sidebar-toggle" aria-label="Toggle sidebar">
+          <i data-lucide="panel-left-close" style="width:18px;height:18px;"></i>
+        </button>
+      </div>
+    </aside>
+
+    <div class="main-wrapper">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button type="button" class="icon-btn mobile-menu-btn" id="mobile-menu-btn" aria-label="Menu">
+            <i data-lucide="menu" style="width:18px;height:18px;"></i>
+          </button>
+          <span class="topbar-title">{% block page_title %}{{ t('nav_dashboard') }}{% endblock %}</span>
+        </div>
+        <div class="topbar-right">
+          {% if price_ctx is defined and price_ctx.gram_price > 0 %}
+          <div class="price-chip">
+            <i data-lucide="gem" style="width:14px;height:14px;color:var(--text-muted);"></i>
+            <span class="price-value">{{ price_ctx.gram_display }}</span>
+            {% if price_ctx.delta_display %}
+            <span class="price-delta {% if price_ctx.gram_change >= 0 %}up{% else %}down{% endif %}">{{ price_ctx.delta_display }}</span>
+            {% endif %}
+          </div>
+          <a href="{{ url_for('main.refresh_price') }}" class="icon-btn" title="{{ t('refresh_price') }}">
+            <i data-lucide="refresh-cw" style="width:16px;height:16px;"></i>
+          </a>
+          {% endif %}
+          <form action="{{ url_for('main.toggle_privacy') }}" method="post" style="margin:0;">
+            <button type="submit" class="icon-btn" title="{{ t('privacy_mode_hint') }}">
+              <i data-lucide="{% if privacy_mode %}eye-off{% else %}eye{% endif %}" style="width:16px;height:16px;"></i>
+            </button>
+          </form>
+          <a href="{{ url_for('settings.index') }}" class="icon-btn" title="{{ t('nav_profile') }}">
+            <i data-lucide="user" style="width:16px;height:16px;"></i>
+          </a>
+        </div>
+      </header>
+
+      <main class="page-content fade-in">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            <div class="flash-messages">
+              {% for category, message in messages %}
+                <div class="flash {{ category }}">{{ message }}</div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+      </main>
+    </div>
+  </div>
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

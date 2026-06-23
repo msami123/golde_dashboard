@@ -3,7 +3,6 @@ import json
 from datetime import date, datetime, timezone
 
 import requests
-import streamlit as st
 
 from config import (
     API_USAGE_FILE,
@@ -299,7 +298,6 @@ def get_historical_gram_price(target_date: date) -> float | None:
         return None
 
 
-@st.cache_data(ttl=3600, show_spinner=False)
 def get_monthly_gram_prices(
     start: date,
     end: date,

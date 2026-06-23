@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% block page_title %}{{ t('nav_dashboard') }}{% endblock %}
+
+{% block content %}
+{% if privacy_mode %}
+<div class="alert info">{{ t('privacy_active') }}</div>
+{% endif %}
+
+{% if empty %}
+<div class="empty-state">
+  <div class="empty-state-icon"><i data-lucide="coins"></i></div>
+  <h3>{{ t('no_bars_title') }}</h3>
+  <p>{{ t('no_bars_hint') }}</p>
+  <a href="{{ add_bar_url }}" class="btn btn-primary">{{ t('add_first_bar') }}</a>
+</div>
+{% else %}
+
+<div class="hero-kpi">
+  <div class="hero-label">{{ t('portfolio_value_label') }}</div>
+  <div class="hero-value">{{ summary.current_value|money(lang) }}</div>
+  <div class="hero-meta">
+    <span class="badge {% if summary.profit_loss >= 0 %}badge-success{% else %}badge-danger{% endif %}">
+      {{ summary.profit_loss|money(lang, signed=true) }} · {{ summary.return_percentage|pct }}
+    </span>
+    {% if price_ctx.gram_price > 0 %}
+    <span class="badge badge-neutral">{{ t('gold_today') }}: {{ price_ctx.gram_price|money(lang) }}</span>
+    {% endif %}
+  </div>
+</div>
+
+<div class="stats-grid">
+  {% for card in summary_cards %}
+  <div class="stat-card">
+    <div class="stat-label">{{ card.title }}</div>
+    <div class="stat-value{% if card.value_type %} {{ card.value_type }}{% endif %}">{{ card.value }}</div>
+    {% if card.badge %}<span class="stat-badge {{ card.badge_type }}">{{ card.badge }}</span>{% endif %}
+  </div>
+  {% endfor %}
+</div>
+
+<div class="grid-2">
+  <div class="panel chart-panel">
+    <div class="panel-header"><h2>{{ t('portfolio_trend') }}</h2></div>
+    <div class="panel-body chart-container">{{ portfolio_chart|safe }}</div>
+  </div>
+  <div class="panel chart-panel">
+    <div class="panel-header"><h2>{{ t('chart_profit_distribution') }}</h2></div>
+    <div class="panel-body chart-container">{{ profit_chart|safe }}</div>
+  </div>
+</div>
+
+<div class="panel" style="margin-top:1.25rem;">
+  <div class="panel-header">
+    <h2>{{ t('recent_purchases') }}</h2>
+    <a href="{{ url_for('gold_bars.index') }}" class="btn btn-ghost btn-sm">{{ t('nav_gold_bars') }} →</a>
+  </div>
+  <div class="table-wrap" style="border:none;box-shadow:none;">
+    <table class="data-table" id="recent-table">
+      <thead>
+        <tr>
+          <th>{{ t('purchase_date') }}</th>
+          <th>{{ t('bar_type') }}</th>
+          <th>{{ t('grams') }}</th>
+          <th>{{ t('current_value') }}</th>
+          <th>{{ t('profit_loss') }}</th>
+          <th>{{ t('return_pct') }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for m in metrics[:8] %}
+        <tr>
+          <td>{{ m.purchase_date|date_local(lang) }}</td>
+          <td>{{ m.bar_type }}</td>
+          <td class="num">{{ m.grams|weight(lang) }}</td>
+          <td class="num">{{ m.current_value|money(lang) }}</td>
+          <td class="num"><span class="badge {% if m.profit_loss >= 0 %}badge-success{% else %}badge-danger{% endif %}">{{ m.profit_loss|money(lang, signed=true) }}</span></td>
+          <td class="num">{{ m.return_percentage|pct }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% if best_card or worst_card %}
+<div class="stats-grid" style="margin-top:1.25rem;">
+  {% if best_card %}
+  <div class="stat-card">
+    <div class="stat-label">{{ t('best_performing') }}</div>
+    <div class="stat-value success">{{ best_card.value }}</div>
+    <span class="stat-badge success">{{ best_card.badge }}</span>
+  </div>
+  {% endif %}
+  {% if worst_card %}
+  <div class="stat-card">
+    <div class="stat-label">{{ t('worst_performing') }}</div>
+    <div class="stat-value danger">{{ worst_card.value }}</div>
+    <span class="stat-badge danger">{{ worst_card.badge }}</span>
+  </div>
+  {% endif %}
+</div>
+{% endif %}
+
+{% endif %}
+{% endblock %}

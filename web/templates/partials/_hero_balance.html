@@ -1,0 +1,24 @@
+{% set is_profit = summary.profit_loss >= 0 %}
+{% set value_type = 'profit' if is_profit else 'loss' %}
+{% set arrow = '↑' if is_profit else '↓' %}
+<div class="hero-balance">
+  <div class="hero-balance-label">💎 {{ t('wallet_balance') }}</div>
+  <div class="hero-balance-value {{ value_type }}">{{ summary.current_value|money(lang) }}</div>
+  <div class="hero-balance-row">
+    <span class="bar-card-badge {{ value_type }}">
+      {{ summary.profit_loss|money(lang, signed=true) }} · {{ summary.return_percentage|pct }} {{ arrow }}
+    </span>
+  </div>
+  {% if price_ctx.gram_price > 0 %}
+    <div class="hero-gold-line">
+      {{ t('gold_today') }}: {{ price_ctx.gram_price|money(lang) }}
+      {% if price_ctx.change_pct is not none and not privacy_mode %}
+        · <span class="{% if price_ctx.gram_change >= 0 %}gold-up{% else %}gold-down{% endif %}">
+          {% if price_ctx.gram_change >= 0 %}+{% endif %}{{ "%.1f"|format(price_ctx.gram_change) }}
+          ({% if price_ctx.change_pct >= 0 %}+{% endif %}{{ "%.1f"|format(price_ctx.change_pct) }}%)
+          {{ arrow }}
+        </span>
+      {% endif %}
+    </div>
+  {% endif %}
+</div>

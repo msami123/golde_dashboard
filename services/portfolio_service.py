@@ -3,7 +3,6 @@ from datetime import date
 from types import SimpleNamespace
 
 import pandas as pd
-import streamlit as st
 from sqlalchemy.orm import Session, joinedload
 
 from db.models import GoldBar, OwnershipParticipant
@@ -92,10 +91,9 @@ def _bar_from_record(record: dict) -> SimpleNamespace:
     )
 
 
-@st.cache_data(show_spinner=False)
-def _fetch_bar_records(_session: Session, user_id: int) -> tuple[dict, ...]:
+def _fetch_bar_records(session: Session, user_id: int) -> tuple[dict, ...]:
     bars = (
-        _session.query(GoldBar)
+        session.query(GoldBar)
         .options(joinedload(GoldBar.participants))
         .filter(GoldBar.owner_id == user_id)
         .order_by(GoldBar.purchase_date.desc())
@@ -105,7 +103,7 @@ def _fetch_bar_records(_session: Session, user_id: int) -> tuple[dict, ...]:
 
 
 def _invalidate_user_bar_cache(user_id: int) -> None:
-    _fetch_bar_records.clear()
+    pass
 
 
 def calculate_bar_metrics(bar: GoldBar, gram_price: float) -> BarMetrics:

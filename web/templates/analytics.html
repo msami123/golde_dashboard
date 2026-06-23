@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block page_title %}{{ t('nav_analytics') }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>{{ t('nav_analytics') }}</h1>
+  <p>{{ t('page_analytics_desc') }}</p>
+</div>
+
+{% if empty %}
+<div class="empty-state">
+  <div class="empty-state-icon"><i data-lucide="bar-chart-3"></i></div>
+  <h3>{{ t('no_bars_title') }}</h3>
+  <p>{{ t('no_bars_hint') }}</p>
+  <a href="{{ url_for('gold_bars.index', tab='add') }}" class="btn btn-primary">{{ t('add_first_bar') }}</a>
+</div>
+{% else %}
+
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-label">{{ t('total_cost') }}</div>
+    <div class="stat-value">{{ summary.total_cost|money(lang) }}</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">{{ t('current_value') }}</div>
+    <div class="stat-value">{{ summary.current_value|money(lang) }}</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">{{ t('return_pct') }}</div>
+    <div class="stat-value {% if summary.return_percentage >= 0 %}success{% else %}danger{% endif %}">{{ summary.return_percentage|pct }}</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">{{ t('avg_cost_per_gram') }}</div>
+    <div class="stat-value">{{ summary.avg_cost_per_gram|money(lang) }}</div>
+  </div>
+</div>
+
+<div class="panel chart-panel">
+  <div class="panel-header"><h2>{{ t('chart_portfolio_value') }}</h2></div>
+  <div class="panel-body chart-container">{{ portfolio_chart|safe }}</div>
+</div>
+
+<div class="panel chart-panel">
+  <div class="panel-header"><h2>{{ t('chart_profit_distribution') }}</h2></div>
+  <div class="panel-body chart-container">{{ profit_chart|safe }}</div>
+</div>
+
+{% if best or worst %}
+<div class="grid-2" style="margin-top:1.25rem;">
+  {% if best %}
+  <div class="panel">
+    <div class="panel-header"><h2>{{ t('best_performing') }}</h2></div>
+    <div class="panel-body">
+      <p style="margin:0 0 0.5rem;font-weight:600;">{{ best.bar_type }}</p>
+      <p class="num" style="font-size:1.5rem;font-weight:600;color:var(--success);">{{ best.profit_loss|money(lang, signed=true) }}</p>
+      <p style="color:var(--text-secondary);font-size:0.85rem;">{{ best.return_percentage|pct }} · {{ best.grams|weight(lang) }}</p>
+    </div>
+  </div>
+  {% endif %}
+  {% if worst %}
+  <div class="panel">
+    <div class="panel-header"><h2>{{ t('worst_performing') }}</h2></div>
+    <div class="panel-body">
+      <p style="margin:0 0 0.5rem;font-weight:600;">{{ worst.bar_type }}</p>
+      <p class="num" style="font-size:1.5rem;font-weight:600;color:var(--danger);">{{ worst.profit_loss|money(lang, signed=true) }}</p>
+      <p style="color:var(--text-secondary);font-size:0.85rem;">{{ worst.return_percentage|pct }} · {{ worst.grams|weight(lang) }}</p>
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endif %}
+
+{% endif %}
+{% endblock %}

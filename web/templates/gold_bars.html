@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+{% block page_title %}{{ t('nav_gold_bars') }}{% endblock %}
+
+{% block content %}
+<div class="page-header" style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:1rem;">
+  <div>
+    <h1>{{ t('nav_gold_bars') }}</h1>
+    <p>{{ t('app_subtitle') }}</p>
+  </div>
+  <a href="{{ url_for('gold_bars.index', tab='add') }}" class="btn btn-primary">
+    <i data-lucide="plus" style="width:16px;height:16px;"></i> {{ t('add_bar') }}
+  </a>
+</div>
+
+{% if privacy_mode %}<div class="alert info">{{ t('privacy_active') }}</div>{% endif %}
+
+<div class="tabs">
+  <a href="{{ url_for('gold_bars.index', tab='list') }}" class="tab-link{% if tab == 'list' %} active{% endif %}">{{ t('nav_gold_bars') }}</a>
+  <a href="{{ url_for('gold_bars.index', tab='add') }}" class="tab-link{% if tab == 'add' %} active{% endif %}">{{ t('add_bar') }}</a>
+  <a href="{{ url_for('gold_bars.index', tab='edit') }}" class="tab-link{% if tab == 'edit' %} active{% endif %}">{{ t('edit_bar') }}</a>
+  <a href="{{ url_for('gold_bars.index', tab='delete') }}" class="tab-link{% if tab == 'delete' %} active{% endif %}">{{ t('delete_bar') }}</a>
+</div>
+
+{% if tab == 'list' %}
+  {% if not metrics %}
+  <div class="empty-state">
+    <div class="empty-state-icon"><i data-lucide="coins"></i></div>
+    <h3>{{ t('no_bars_title') }}</h3>
+    <p>{{ t('no_bars_hint') }}</p>
+    <a href="{{ url_for('gold_bars.index', tab='add') }}" class="btn btn-primary">{{ t('add_first_bar') }}</a>
+  </div>
+  {% else %}
+  <div style="display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:1.25rem;align-items:center;">
+    <div class="search-bar">
+      <i data-lucide="search" class="search-icon"></i>
+      <input type="text" id="table-search" class="form-control" placeholder="{{ t('search') }}" value="{{ search }}">
+    </div>
+    <select id="table-filter" class="form-control" style="width:auto;min-width:160px;">
+      <option value="{{ t('all_types') }}">{{ t('all_types') }}</option>
+      {% for bt in bar_types %}<option value="{{ bt }}" {% if bar_type_filter == bt %}selected{% endif %}>{{ bt }}</option>{% endfor %}
+    </select>
+    <select id="table-sort" class="form-control" style="width:auto;min-width:140px;">
+      {% for key in sort_options %}<option value="{{ key }}" {% if sort_key == key %}selected{% endif %}>{{ t(key) }}</option>{% endfor %}
+    </select>
+  </div>
+
+  <div class="table-wrap">
+    <table class="data-table" id="bars-table">
+      <thead>
+        <tr>
+          <th>{{ t('purchase_date') }}</th>
+          <th>{{ t('bar_type') }}</th>
+          <th>{{ t('grams') }}</th>
+          <th>{{ t('purchase_price') }}</th>
+          <th>{{ t('current_value') }}</th>
+          <th>{{ t('profit_loss') }}</th>
+          <th>{{ t('return_pct') }}</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for m in metrics %}
+        <tr data-type="{{ m.bar_type }}" data-search="{{ m.bar_type|lower }} {{ (m.notes or '')|lower }}">
+          <td>{{ m.purchase_date|date_local(lang) }}</td>
+          <td><strong>{{ m.bar_type }}</strong></td>
+          <td class="num">{{ m.grams|weight(lang) }}</td>
+          <td class="num">{{ m.purchase_price|money(lang) }}</td>
+          <td class="num">{{ m.current_value|money(lang) }}</td>
+          <td class="num"><span class="badge {% if m.profit_loss >= 0 %}badge-success{% else %}badge-danger{% endif %}">{{ m.profit_loss|money(lang, signed=true) }}</span></td>
+          <td class="num">{{ m.return_percentage|pct }}</td>
+          <td><a href="{{ url_for('gold_bars.index', tab='edit', edit=m.id) }}" class="btn btn-ghost btn-sm">{{ t('edit') }}</a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div class="pagination" id="table-pagination">
+    <span id="page-info"></span>
+    <div style="display:flex;gap:0.5rem;">
+      <button type="button" class="btn btn-secondary btn-sm" id="prev-page">←</button>
+      <button type="button" class="btn btn-secondary btn-sm" id="next-page">→</button>
+    </div>
+  </div>
+  {% endif %}
+
+{% elif tab == 'add' %}
+  <div class="panel" style="max-width:640px;">
+    <div class="panel-header"><h2>{{ t('add_bar') }}</h2></div>
+    <div class="panel-body">
+      {% set action = 'add' %}{% set bar = none %}
+      {% include 'partials/_bar_form.html' %}
+    </div>
+  </div>
+
+{% elif tab == 'edit' %}
+  {% if not bars %}
+  <div class="alert info">{{ t('no_bars') }}</div>
+  {% else %}
+  <div class="panel" style="max-width:640px;">
+    <div class="panel-header"><h2>{{ t('edit_bar') }}</h2></div>
+    <div class="panel-body">
+      {% if not edit_bar %}
+      <form method="get" class="form-group">
+        <input type="hidden" name="tab" value="edit">
+        <label for="edit_select">{{ t('select_bar_to_edit') }}</label>
+        <select id="edit_select" name="edit" class="form-control" onchange="this.form.submit()">
+          <option value="">—</option>
+          {% for b in bars %}
+          <option value="{{ b.id }}">{% if privacy_mode %}{{ b.bar_type }}{% else %}{{ b.bar_type }} — {{ b.purchase_date|date_local(lang) }}{% endif %}</option>
+          {% endfor %}
+        </select>
+      </form>
+      {% else %}
+      {% set action = 'edit' %}{% set bar = edit_bar %}
+      {% include 'partials/_bar_form.html' %}
+      {% endif %}
+    </div>
+  </div>
+  {% endif %}
+
+{% elif tab == 'delete' %}
+  {% if not bars %}
+  <div class="alert info">{{ t('no_bars') }}</div>
+  {% else %}
+  <div class="panel" style="max-width:480px;">
+    <div class="panel-header"><h2>{{ t('delete_bar') }}</h2></div>
+    <div class="panel-body">
+      <form method="post" data-confirm-delete="{{ t('confirm_delete') }}">
+        <input type="hidden" name="action" value="delete">
+        <div class="form-group">
+          <label for="delete_select">{{ t('select_bar_to_delete') }}</label>
+          <select id="delete_select" name="bar_id" class="form-control" required>
+            {% for b in bars %}
+            <option value="{{ b.id }}">{{ b.bar_type }} — {{ b.purchase_date|date_local(lang) }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="alert warning">{{ t('confirm_delete') }}</div>
+        <button type="submit" class="btn btn-danger">{{ t('delete') }}</button>
+      </form>
+    </div>
+  </div>
+  {% endif %}
+{% endif %}
+{% endblock %}

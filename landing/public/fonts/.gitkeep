@@ -1,0 +1,5 @@
+/* Place TT Norms Pro font files here:
+   - tt-norms-pro-regular.woff2 (weight 400)
+   - tt-norms-pro-semibold.woff2 (weight 600)
+   Until added, the app falls back to ui-sans-serif / system-ui.
+*/

@@ -4,6 +4,7 @@ from db.database import get_session, init_db
 from views import admin, gold_bars, login, overview, shared_ownership
 from services.gold_price_service import get_api_usage_stats, get_gold_price
 from utils.auth_session import is_logged_in, logout, restore_session_from_cookie
+from utils.context import set_lang, set_privacy_mode
 from utils.cards import render_daily_price_change
 from utils.formatting import format_datetime_local, format_money, format_percentage, ltr_text
 from utils.i18n import apply_rtl_css, get_lang, t
@@ -25,6 +26,9 @@ if "page" not in st.session_state:
 
 if "privacy_mode" not in st.session_state:
     st.session_state.privacy_mode = False
+
+set_lang(st.session_state.lang)
+set_privacy_mode(st.session_state.privacy_mode)
 
 apply_rtl_css()
 
@@ -59,6 +63,7 @@ with st.sidebar:
     )
     if lang_choice != st.session_state.lang:
         st.session_state.lang = lang_choice
+        set_lang(lang_choice)
         st.rerun()
 
     st.divider()
@@ -159,6 +164,7 @@ try:
     with eye_col:
         if st.button(eye_icon, key="privacy_eye", help=t("privacy_mode_hint")):
             st.session_state.privacy_mode = not st.session_state.privacy_mode
+            set_privacy_mode(st.session_state.privacy_mode)
             st.rerun()
 
     current_page = st.session_state.page

@@ -1,8 +1,8 @@
-import streamlit as st
+from utils.context import is_privacy_mode as _is_privacy_mode
 
 
 def is_privacy_mode() -> bool:
-    return bool(st.session_state.get("privacy_mode", False))
+    return _is_privacy_mode()
 
 
 def mask_money(lang: str = "ar") -> str:

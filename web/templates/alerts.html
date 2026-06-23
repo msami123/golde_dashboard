@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block page_title %}{{ t('nav_alerts') }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>{{ t('nav_alerts') }}</h1>
+  <p>{{ t('page_alerts_desc') }}</p>
+</div>
+
+<div class="settings-grid">
+  <div class="panel">
+    <div class="panel-header">
+      <h2><i data-lucide="trending-up" style="width:16px;height:16px;display:inline;vertical-align:-2px;"></i> Price Alerts</h2>
+      <span class="badge badge-neutral">{{ t('coming_soon') }}</span>
+    </div>
+    <div class="panel-body">
+      <p style="color:var(--text-secondary);font-size:0.9rem;margin:0;">
+        Get notified when gold reaches your target price per gram.
+        {% if gram_price > 0 %}Current: <strong>{{ gram_price|money(lang) }}</strong>{% endif %}
+      </p>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-header">
+      <h2><i data-lucide="wallet" style="width:16px;height:16px;display:inline;vertical-align:-2px;"></i> Portfolio Alerts</h2>
+      <span class="badge badge-neutral">{{ t('coming_soon') }}</span>
+    </div>
+    <div class="panel-body">
+      <p style="color:var(--text-secondary);font-size:0.9rem;margin:0;">Alerts when your portfolio hits profit or loss thresholds.</p>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-header">
+      <h2><i data-lucide="bell" style="width:16px;height:16px;display:inline;vertical-align:-2px;"></i> Notifications</h2>
+      <span class="badge badge-neutral">{{ t('coming_soon') }}</span>
+    </div>
+    <div class="panel-body">
+      <div class="setting-item">
+        <span>Email notifications</span>
+        <input type="checkbox" disabled>
+      </div>
+      <div class="setting-item">
+        <span>Price change digest</span>
+        <input type="checkbox" disabled>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

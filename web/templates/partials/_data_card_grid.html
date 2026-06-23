@@ -1,0 +1,13 @@
+<div class="card-grid">
+  {% for card in cards %}
+    <div class="bar-card data-card">
+      <div class="data-card-title">{{ card.title }}</div>
+      {% for row in card.rows %}
+        <div class="data-row">
+          <span class="data-row-label">{{ row[0] }}</span>
+          <span class="data-row-value{% if row|length > 2 %} {{ row[2] }}{% endif %}">{{ row[1] }}</span>
+        </div>
+      {% endfor %}
+    </div>
+  {% endfor %}
+</div>

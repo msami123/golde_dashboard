@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block page_title %}{{ t('nav_admin') }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>{{ t('nav_admin') }}</h1>
+  <p>{{ t('admin_subtitle') }}</p>
+</div>
+
+<div class="panel" style="margin-bottom:1.25rem;">
+  <div class="panel-header"><h2>{{ t('admin_users_list') }}</h2></div>
+  <div class="panel-body" style="padding:0;">
+    {% if not users %}
+    <div class="alert info" style="margin:1rem;">{{ t('admin_no_users') }}</div>
+    {% else %}
+    <table class="data-table">
+      <thead><tr><th>{{ t('username') }}</th><th>Role</th><th></th></tr></thead>
+      <tbody>
+        {% for user in users %}
+        <tr>
+          <td><strong>{{ user.username }}</strong>{% if user.id == current_user_id %} <span class="badge badge-neutral">{{ t('admin_you') }}</span>{% endif %}</td>
+          <td>{% if user.is_admin %}{{ t('admin_role_admin') }}{% else %}{{ t('admin_role_user') }}{% endif %}</td>
+          <td>
+            {% if user.id != current_user_id %}
+            <form method="post" style="display:inline;">
+              <input type="hidden" name="action" value="delete_user">
+              <input type="hidden" name="user_id" value="{{ user.id }}">
+              <button type="submit" class="btn btn-danger btn-sm">{{ t('delete') }}</button>
+            </form>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% endif %}
+  </div>
+</div>
+
+<div class="grid-2">
+  <div class="panel">
+    <div class="panel-header"><h2>{{ t('admin_add_user') }}</h2></div>
+    <div class="panel-body">
+      <form method="post">
+        <input type="hidden" name="action" value="add_user">
+        <div class="form-group"><label>{{ t('username') }}</label><input type="text" name="username" class="form-control" required></div>
+        <div class="form-group"><label>{{ t('password') }}</label><input type="password" name="password" class="form-control" required></div>
+        <label class="checkbox-label" style="display:flex;align-items:center;gap:0.5rem;margin-bottom:1rem;">
+          <input type="checkbox" name="is_admin"> {{ t('admin_is_admin') }}
+        </label>
+        <button type="submit" class="btn btn-primary">{{ t('save') }}</button>
+      </form>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="panel-header"><h2>{{ t('admin_change_password') }}</h2></div>
+    <div class="panel-body">
+      <form method="post">
+        <input type="hidden" name="action" value="change_password">
+        <div class="form-group"><label>{{ t('current_password') }}</label><input type="password" name="current_password" class="form-control" required></div>
+        <div class="form-group"><label>{{ t('new_password') }}</label><input type="password" name="new_password" class="form-control" required></div>
+        <div class="form-group"><label>{{ t('confirm_password') }}</label><input type="password" name="confirm_password" class="form-control" required></div>
+        <button type="submit" class="btn btn-primary">{{ t('admin_update_password') }}</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

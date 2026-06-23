@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block page_title %}{{ t('nav_forecasting') }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>{{ t('forecast_title') }}</h1>
+  <p>{{ t('page_forecast_desc') }}</p>
+</div>
+
+{% if empty %}
+<div class="empty-state">
+  <div class="empty-state-icon"><i data-lucide="trending-up"></i></div>
+  <h3>{{ t('no_bars') }}</h3>
+  <a href="{{ url_for('gold_bars.index', tab='add') }}" class="btn btn-primary">{{ t('add_first_bar') }}</a>
+</div>
+{% else %}
+
+<div class="stats-grid">
+  {% for title, value in forecast_stats %}
+  <div class="stat-card">
+    <div class="stat-label">{{ title }}</div>
+    <div class="stat-value">{{ value }}</div>
+  </div>
+  {% endfor %}
+</div>
+
+<div class="forecast-grid">
+  {% for card in forecast_cards %}
+  <div class="forecast-card{% if card.featured %} featured{% endif %}">
+    <div class="fc-tag">{{ card.price_text }}</div>
+    <p style="margin:0 0 0.5rem;font-weight:600;">{{ card.title }}</p>
+    <div class="fc-value">{{ card.value_text }}</div>
+    <div style="margin-top:0.75rem;display:flex;gap:0.5rem;flex-wrap:wrap;">
+      <span class="badge {% if card.is_profit %}badge-success{% else %}badge-danger{% endif %}">{{ card.profit_text }}</span>
+      <span class="badge badge-neutral">{{ card.return_text }}</span>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+<div class="panel" style="margin-top:1.5rem;max-width:420px;">
+  <div class="panel-header"><h2>{{ t('forecast_custom_result') }}</h2></div>
+  <div class="panel-body">
+    <div class="form-group">
+      <label for="custom-forecast-price">{{ t('custom_price') }}</label>
+      <input type="number" id="custom-forecast-price" class="form-control" min="0" step="10"
+             value="{{ price_ctx.gram_price if price_ctx.gram_price > 0 else 550 }}">
+    </div>
+    <div id="custom-forecast-result" style="display:none;"
+         data-total-grams="{{ summary.total_grams }}" data-total-cost="{{ summary.total_cost }}">
+      <div class="fc-value forecast-value" style="margin-bottom:0.5rem;"></div>
+      <span class="badge forecast-profit"></span>
+      <span class="badge badge-neutral forecast-return" style="margin-inline-start:0.5rem;"></span>
+    </div>
+  </div>
+</div>
+
+{% endif %}
+{% endblock %}

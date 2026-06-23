@@ -1,4 +1,3 @@
-import streamlit as st
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
@@ -16,18 +15,18 @@ if not _database_url.startswith("sqlite"):
 engine = create_engine(_database_url, **_engine_kwargs)
 SessionLocal = sessionmaker(bind=engine, autocommit=False, autoflush=False)
 
+_db_initialized = False
 
-@st.cache_resource
-def _init_db_once() -> bool:
+
+def init_db() -> None:
+    global _db_initialized
+    if _db_initialized:
+        return
     Base.metadata.create_all(bind=engine)
     from services.auth_service import seed_admin_user
 
     seed_admin_user()
-    return True
-
-
-def init_db() -> None:
-    _init_db_once()
+    _db_initialized = True
 
 
 def get_session() -> Session:
